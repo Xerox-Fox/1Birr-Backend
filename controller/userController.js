@@ -1,7 +1,6 @@
-const db = require("../db/dbConfig")
+const db = require("../db/dbConfig");
 const bcrypt = require('bcryptjs');
 const { StatusCodes } = require('http-status-codes')
-const { users } = require('../db/dbTables')
 
 const jwt = require('jsonwebtoken');
 
@@ -13,7 +12,7 @@ async function register(req, res) {
 
     try{
 
-        const [user] = await db.query(`select name,userid from ${users} where name = ? or email =?`, [name, email])
+        const [user] = await db.query(`select name,userid from users where name = ? or email =?`, [name, email])
         if (user.length > 0){
             return res.status(StatusCodes.BAD_REQUEST).json({ msg: "user already registered" })
         }
@@ -26,7 +25,7 @@ async function register(req, res) {
         const hashedPassword = await bcrypt.hash(password,salt)
 
         await db.query(
-            `INSERT INTO ${users} (name, bank, description, email, password, user_type, phone) VALUES (?,?,?,?,?,?,?)`, 
+            `INSERT INTO users (name, bank, description, email, password, user_type, phone) VALUES (?,?,?,?,?,?,?)`, 
             [name, bank, description, email, hashedPassword, usertype, phone])
         return res.status(StatusCodes.CREATED).json({ msg: "user registered" })
 
@@ -43,7 +42,7 @@ async function login(req,res) {
     }
 
     try{
-        const [user] = await db.query(`select name,userid,password from ${users} where email = ? `, [email])
+        const [user] = await db.query(`select name,userid,password from users where email = ? `, [email])
         if (user.length==0) {
             return res.status(StatusCodes.BAD_REQUEST).json({ msg: "invalid credentials" });
         } 
@@ -57,7 +56,7 @@ async function login(req,res) {
         const userid = user[0].userid
 
         const token = jwt.sign({ username, userid }, "secret", { expiresIn: "1d" })
-        const info = await db.query(`select name, bank, description, email, password, user_type, phone from ${users} where email = ?`, [email])
+        const info = await db.query(`select name, bank, description, email, password, user_type, phone from users where email = ?`, [email])
         return res.status(StatusCodes.OK).json({ msg: "user login successful", token, info })
 
     } catch (error) {

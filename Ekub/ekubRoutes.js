@@ -18,7 +18,7 @@ router.post('/add-member', async (req, res) => {
 });
 
 // Run a round of Ekub
-router.post('/ekub/:ekubId/run-round', async (req, res) => {
+router.get('/:ekubId/run-round', async (req, res) => {
     const { ekubId } = req.params;
     
     try {
