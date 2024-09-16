@@ -1,4 +1,4 @@
-const users = `CREATE TABLE IF NOT EXISTS users (
+const users = `CREATE TABLE users (
     userid INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
